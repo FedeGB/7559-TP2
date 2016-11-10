@@ -6,6 +6,7 @@ jugar
 import System.IO
 import System.Random
 import Control.Concurrent
+import Data.Char
 
 data Player = Player { id :: String
                      , turnos :: Int
@@ -39,12 +40,14 @@ jugar (x,y) grilla movimientos id = do
 	gen2 <- newStdGen
 	{-Obtengo la posicion a la que moverme-}
 	let posicionesPosibles = obtenePosicionesValidas (x,y) grilla
+	let maximoEspera = digitToInt('5')
 	let maximo = (length (posicionesPosibles) - 1)
 	let random = head (take 1 (randomRs (0,maximo) gen2))
+	let espera = head (take 1 (randomRs (0,maximoEspera) gen))
 	let posicionALaQueMeMuevo = (posicionesPosibles !! random)
 	
 	putStrLn $ "Jugador "++id ++" me movi de " ++ show (x,y) ++ " a " ++ show posicionALaQueMeMuevo
 
-	threadDelay 100000
+	threadDelay (100000*espera)
 
 	jugar posicionALaQueMeMuevo grilla (movimientos-1) id

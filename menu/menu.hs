@@ -28,9 +28,9 @@ cantiadadJugadores parametros = digitToInt( parametros !! 2)
 main = do
 
 	contents <- readFile "config"
-	putStrLn (show contents)
-	let todoTasks = lines contents
-	putStrLn (show(todoTasks ))
+	--putStrLn (show contents)
+	--let todoTasks = lines contents
+	--putStrLn (show(todoTasks ))
 
 	let parametros = [ a | a <- contents, a /= '\n',a/= ' ']
 
@@ -40,5 +40,5 @@ main = do
 
 	cargarJugadores cantidadDeJugadores idInicial grilla
 
-	threadDelay 2000000
+	threadDelay 10000000
 
