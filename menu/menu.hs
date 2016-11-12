@@ -2,6 +2,8 @@ import System.IO
 import Control.Concurrent
 import System.Random
 import Data.Char
+import Data.List
+import Parser
 import Jugador
 import Grilla
 
@@ -19,26 +21,19 @@ cargarJugadores cantidad id grilla = do
 
 	cargarJugadores (cantidad-1) (id+1) grilla
 
-altoGrilla parametros = digitToInt( parametros !! 0)
-
-anchoGrilla parametros = digitToInt( parametros !! 1)
-
-cantiadadJugadores parametros = digitToInt( parametros !! 2)
-
 main = do
 
 	contents <- readFile "config"
-	--putStrLn (show contents)
-	--let todoTasks = lines contents
-	--putStrLn (show(todoTasks ))
 
-	let parametros = [ a | a <- contents, a /= '\n',a/= ' ']
+	let ancho = Parser.obtenerAncho contents
+	let alto = Parser.obtenerAlto contents
+	let maximoJugadores = Parser.obtenerMaximoJugadores contents
 
-	let grilla = Grilla.generarGrilla (altoGrilla parametros) (anchoGrilla parametros)
-	let cantidadDeJugadores = (cantiadadJugadores parametros)
+	let grilla = Grilla.generarGrilla ancho alto
+	
 	let idInicial = 0
 
-	cargarJugadores cantidadDeJugadores idInicial grilla
+	cargarJugadores maximoJugadores idInicial grilla
 
 	threadDelay 10000000
 
