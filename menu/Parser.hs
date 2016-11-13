@@ -16,7 +16,7 @@ ancho parametro = parametro == "ancho"
 
 maximoJugadores parametro = parametro == "maximoJugadores"
 
-obtenerParametro validador parametros = digitToInt ( head ( head [ y | (x,y)<-parametros , validador x ] ) )
+obtenerParametro validador parametros = ( read ( head [ y | (x,y)<-parametros , validador x ] ) :: Int )
 
 valorParametro parametro = drop ( ( head $ elemIndices ':' parametro ) + 1 ) parametro
 
@@ -24,8 +24,10 @@ tipoParametro parametro = take ( head $ elemIndices ':' parametro ) parametro
 
 dividirLista parametros = [ ( ( tipoParametro x ) , ( valorParametro x) ) | x <- parametros ]
 
-obtenerAlto listaParametros = obtenerParametro altura ( dividirLista ( obtenerLineas listaParametros ) )
+parser listaParametros = dividirLista ( obtenerLineas listaParametros )
 
-obtenerAncho listaParametros = obtenerParametro ancho ( dividirLista ( obtenerLineas listaParametros ) )
+obtenerAlto listaParametros = obtenerParametro altura ( parser listaParametros )
 
-obtenerMaximoJugadores listaParametros = obtenerParametro maximoJugadores ( dividirLista ( obtenerLineas listaParametros ) )
+obtenerAncho listaParametros = obtenerParametro ancho ( parser listaParametros )
+
+obtenerMaximoJugadores listaParametros = obtenerParametro maximoJugadores ( parser listaParametros )

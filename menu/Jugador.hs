@@ -6,6 +6,7 @@ jugar
 import System.IO
 import System.Random
 import Control.Concurrent
+import Control.Concurrent.STM
 import Data.Char
 
 data Player = Player { id :: String
@@ -32,9 +33,12 @@ grilla
 cantidad de movimientos a realizar --> se lo reemplaza por memoria compartida con un comando de salida
 id del jugador
 -}
-jugar _ _ 0 id = do
-	putStrLn ("Jugador "++id++" termine de moverme")
-jugar (x,y) grilla movimientos id = do
+jugar _ _ 0 id salir = do
+    putStrLn ("Jugador "++id++" termine de moverme")
+    atomically( do valor <- readTVar salir
+                   writeTVar salir (valor - 1) )
+
+jugar (x,y) grilla movimientos id salir = do
 	{-Obtengo generadores aleatorios-}
 	gen <- getStdGen
 	gen2 <- newStdGen
@@ -50,4 +54,4 @@ jugar (x,y) grilla movimientos id = do
 
 	threadDelay (100000*espera)
 
-	jugar posicionALaQueMeMuevo grilla (movimientos-1) id
+	jugar posicionALaQueMeMuevo grilla (movimientos-1) id salir
