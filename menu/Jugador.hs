@@ -15,6 +15,10 @@ data Player = Player { id :: String
                      , posicionInicial :: (Int,Int)
                      } deriving (Show)
 
+salirAntes movimientos valorRandom
+    | valorRandom == 0 = 0
+    | otherwise = movimientos - 1
+
 obtenePosicionesValidas (x,y) grilla = [ a | a <- grilla, movimientoValido (x,y) a]
 
 movimientoValido (x,y) (xf,yf)
@@ -49,9 +53,12 @@ jugar (x,y) grilla movimientos id salir = do
 	let random = head (take 1 (randomRs (0,maximo) gen2))
 	let espera = head (take 1 (randomRs (0,maximoEspera) gen))
 	let posicionALaQueMeMuevo = (posicionesPosibles !! random)
+
+	--Si el numero random es cero sale antes
+	let movimientosRestantes = salirAntes movimientos espera
 	
 	putStrLn $ "Jugador "++id ++" me movi de " ++ show (x,y) ++ " a " ++ show posicionALaQueMeMuevo
 
 	threadDelay (100000*espera)
 
-	jugar posicionALaQueMeMuevo grilla (movimientos-1) id salir
+	jugar posicionALaQueMeMuevo grilla movimientosRestantes id salir
