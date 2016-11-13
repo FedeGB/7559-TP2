@@ -7,9 +7,10 @@ import Data.List
 import Parser
 import Jugador
 import Grilla
+import Memoria
 
 chequearSalida salir = do
-    valor <- readTVar salir
+    valor <- Memoria.leer salir
     check (valor == 0)
 
 cargarJugadores 0 _ _ _ = do return 0
@@ -22,16 +23,16 @@ cargarJugadores cantidad id grilla salir = do
     let random = head (take 1 (randomRs (0,maximo) gen2))
     let posicionInicial = (grilla !! random)
 
-    atomically( do valor <- readTVar salir
-                   writeTVar salir (valor + 1) )
 
+    Memoria.escribir (\x -> x + 1) salir
+    
     tid <- forkIO ( Jugador.jugar posicionInicial grilla 7 (show id) salir)
 
     cargarJugadores (cantidad-1) (id+1) grilla salir
 
 main = do
 
-	salir <- atomically (newTVar 0)
+	salir <- Memoria.crear 0
 
 	contenido <- readFile "config"
 

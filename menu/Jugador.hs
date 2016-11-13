@@ -8,6 +8,7 @@ import System.Random
 import Control.Concurrent
 import Control.Concurrent.STM
 import Data.Char
+import Memoria
 
 data Player = Player { id :: String
                      , turnos :: Int
@@ -35,8 +36,7 @@ id del jugador
 -}
 jugar _ _ 0 id salir = do
     putStrLn ("Jugador "++id++" termine de moverme")
-    atomically( do valor <- readTVar salir
-                   writeTVar salir (valor - 1) )
+    Memoria.escribir (\x -> x - 1) salir
 
 jugar (x,y) grilla movimientos id salir = do
 	{-Obtengo generadores aleatorios-}
