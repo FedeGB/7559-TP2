@@ -2,7 +2,8 @@ module Parser
 (
 obtenerAlto,
 obtenerAncho,
-obtenerMaximoJugadores
+obtenerMaximoJugadores,
+obtenerCantidadDeJugadores
 ) where
 
 import Data.Char
@@ -16,6 +17,8 @@ ancho parametro = parametro == "ancho"
 
 maximoJugadores parametro = parametro == "maximoJugadores"
 
+cantidadDeJugadores parametro = parametro == "cantidadDeJugadores"
+
 obtenerParametro validador parametros = ( read ( head [ y | (x,y)<-parametros , validador x ] ) :: Int )
 
 valorParametro parametro = drop ( ( head $ elemIndices ':' parametro ) + 1 ) parametro
@@ -24,10 +27,12 @@ tipoParametro parametro = take ( head $ elemIndices ':' parametro ) parametro
 
 dividirLista parametros = [ ( ( tipoParametro x ) , ( valorParametro x) ) | x <- parametros ]
 
-parser listaParametros = dividirLista ( obtenerLineas listaParametros )
+parser tipo listaParametros = obtenerParametro tipo ( dividirLista ( obtenerLineas listaParametros ) )
 
-obtenerAlto listaParametros = obtenerParametro altura ( parser listaParametros )
+obtenerAlto listaParametros = parser altura listaParametros
 
-obtenerAncho listaParametros = obtenerParametro ancho ( parser listaParametros )
+obtenerAncho listaParametros = parser ancho listaParametros
 
-obtenerMaximoJugadores listaParametros = obtenerParametro maximoJugadores ( parser listaParametros )
+obtenerMaximoJugadores listaParametros = parser maximoJugadores listaParametros
+
+obtenerCantidadDeJugadores listaParametros = parser cantidadDeJugadores listaParametros
