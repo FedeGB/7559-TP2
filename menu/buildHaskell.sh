@@ -1,2 +1,2 @@
-ghc -threaded menu.hs
+ghc -threaded -XFlexibleContexts menu.hs
 rm *.o *.hi

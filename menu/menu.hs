@@ -9,6 +9,8 @@ import Jugador
 import Grilla
 import Memoria
 import AdministradorDeJugadores
+-- import NidoDeConcumones
+-- import Concumon
 
 chequearSalida salir = do
     valor <- Memoria.leer salir

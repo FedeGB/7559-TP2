@@ -7,8 +7,15 @@ import System.IO
 import Control.Concurrent
 import Control.Concurrent.STM
 import Grilla
+import Concumon
 import Memoria
-import MovimientosUtils
 
+iniciarNido maxConcumones tMovimiento grilla = do
+    concumonesActivos <- Memoria.crear 0
+    crearConcumon maxConcumones concumonesActivos tMovimiento grilla
 
-inicarNido maxConcumones tMovimiento grilla = do
+crearConcumon maxConcumones concumonesActivos tMovimiento grilla
+    | maxConcumones > Memoria.leer2 concumonesActivos = forkIO ( Concumon.iniciar grilla tMovimiento concumonesActivos)
+    | otherwise = do
+    threadDelay (100000)
+    crearConcumon maxConcumones concumonesActivos tMovimiento grilla
