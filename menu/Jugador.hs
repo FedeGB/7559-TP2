@@ -10,6 +10,7 @@ import Control.Concurrent
 import Control.Concurrent.STM
 import Data.Char
 import Memoria
+import MovimientosUtils
 
 cantidadDeMovimientos = 20
 
@@ -25,19 +26,6 @@ chequearInicioDelJuego iniciar = do
 salirAntes movimientos valorRandom
     | valorRandom == 0 = 0
     | otherwise = movimientos - 1
-
-obtenePosicionesValidas (x,y) grilla = [ a | a <- grilla, movimientoValido (x,y) a]
-
-movimientoValido (x,y) (xf,yf)
-    | (((abs $ x - xf) == 1) && ((abs $ y - yf) == 1)) = True
-    | (((abs $ x - xf) == 1) && ((abs $ y - yf) == 0)) = True
-    | (((abs $ x - xf) == 0) && ((abs $ y - yf) == 1)) = True
-    | otherwise    = False
-
-moverme (x,y) [] = (x,y)
-moverme (x,y) ((x1,y1):xs)
-    | movimientoValido (x,y) (x1,y1) = (x1,y1)
-    | otherwise = moverme (x,y) xs
 
 {-
 Posicion de origen
@@ -59,7 +47,7 @@ jugar (x,y) grilla movimientos id salir = do
 	let maximo = (length (posicionesPosibles) - 1)
 	let random = head (take 1 (randomRs (0,maximo) gen2))
 	let espera = head (take 1 (randomRs (0,maximoEspera) gen))
-	let posicionALaQueMeMuevo = (posicionesPosibles !! random)
+	let posicionALaQueMeMuevo = obtenerSoloCoordenadas (posicionesPosibles !! random)
 
 	--Si el numero random es cero sale antes
 	--Hay que cambiar el random
@@ -85,6 +73,6 @@ iniciar grilla id salir iniciar = do
 
     let maximo = (length (grilla) - 1)
     let random = head (take 1 (randomRs (0,maximo) gen2))
-    let posicionInicial = (grilla !! random)
+    let posicionInicial = obtenerSoloCoordenadas (grilla !! random)
 
     jugar posicionInicial grilla cantidadDeMovimientos id salir
