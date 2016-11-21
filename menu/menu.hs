@@ -28,7 +28,7 @@ main = do
     let cantidadDeJugadores = Parser.obtenerCantidadDeJugadores contenido
 
     let grilla = Grilla.generarGrilla ancho alto
-
+--     nido <- forkIO (NidoDeConcumones.iniciarNido 5 2 grilla )
     AdministradorDeJugadores.cargarJugadoresHabilitados maximoJugadores 0 grilla salir maximoJugadores cantidadDeJugadores []
     atomically(chequearSalida salir)
 

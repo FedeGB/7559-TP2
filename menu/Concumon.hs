@@ -30,9 +30,12 @@ consultarValorActualCasilla (x,y) (xf,yf,z)
 
 concumonFueAtrapado (x,y) grilla = [ a | a <- grilla , consultarValorActualCasilla (x,y) a]
 
-moverse (x,y) grilla tMovimiento
-    | length (concumonFueAtrapado (x,y) grilla) == 1 = return()
-    | otherwise = do
+
+moverse _ _ _ concumonesActivos True = do
+    (Memoria.escribir (\x -> x - 1 ) concumonesActivos)
+    return ()
+
+moverse (x,y) grilla tMovimiento concumonesActivos capturado = do
     gen <- getStdGen
     gen2 <- newStdGen
     {-Obtengo la posicion a la que moverme-}
@@ -47,16 +50,15 @@ moverse (x,y) grilla tMovimiento
     putStrLn $ "Concumon se movio de " ++ show (x,y) ++ " a " ++ show posicionALaQueMeMuevo
 
     threadDelay (100000*tMovimiento)
-    moverse posicionALaQueMeMuevo grilla tMovimiento
+    moverse posicionALaQueMeMuevo grilla tMovimiento concumonesActivos (length (concumonFueAtrapado (x,y) grilla) == 1)
 
 iniciar grilla tMovimiento concumonesActivos = do
     putStrLn $ "Concumon nacio del nido"
-
+    Memoria.escribir (\x -> x + 1) concumonesActivos
     gen <- getStdGen
     gen2 <- newStdGen
     let posicionesValidasConcumon = obtenerPosicionesSinConcumon grilla
     let maximo = (length (posicionesValidasConcumon) - 1)
     let random = head (take 1 (randomRs (0,maximo) gen2))
     let posicionInicial = obtenerSoloCoordenadas (posicionesValidasConcumon !! random)
-    Memoria.escribir (\x -> x + 1) concumonesActivos
-    moverse posicionInicial grilla tMovimiento
+    moverse posicionInicial grilla tMovimiento concumonesActivos False

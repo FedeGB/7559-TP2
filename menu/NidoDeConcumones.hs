@@ -12,10 +12,14 @@ import Memoria
 
 iniciarNido maxConcumones tMovimiento grilla = do
     concumonesActivos <- Memoria.crear 0
-    crearConcumon maxConcumones concumonesActivos tMovimiento grilla
+    crearConcumon maxConcumones concumonesActivos tMovimiento grilla False
 
-crearConcumon maxConcumones concumonesActivos tMovimiento grilla
-    | maxConcumones > Memoria.leer2 concumonesActivos = forkIO ( Concumon.iniciar grilla tMovimiento concumonesActivos)
-    | otherwise = do
+crearConcumon maxConcumones concumonesActivos tMovimiento grilla True = do
     threadDelay (100000)
-    crearConcumon maxConcumones concumonesActivos tMovimiento grilla
+    let activos = Memoria.leer concumonesActivos
+    crearConcumon maxConcumones concumonesActivos tMovimiento grilla (maxConcumones == activos)
+
+crearConcumon maxConcumones concumonesActivos tMovimiento grilla False = do
+    cId <- forkIO ( Concumon.iniciar grilla tMovimiento concumonesActivos)
+    let activos = Memoria.leer concumonesActivos
+    crearConcumon maxConcumones concumonesActivos tMovimiento grilla (maxConcumones == activos)
