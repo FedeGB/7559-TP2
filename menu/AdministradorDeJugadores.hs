@@ -6,9 +6,12 @@ cargarJugadoresHabilitados
 import System.IO
 import Control.Concurrent
 import Control.Concurrent.STM
+import Control.Concurrent.STM.TChan
+import Control.Monad
 import Jugador
 import Grilla
 import Memoria
+import Sysadmin
 
 chequearAgregarJugador maximo salir = do
     valor <- Memoria.leer salir
@@ -25,23 +28,23 @@ esperarQueSeLibereElMaximoDeJugadores lista salir maximo = do
     esperarQueSeLibereElMaximoDeJugadores (tail lista) salir maximo
 
 
-cargarJugadoresRestantes 0 lista _ _ salir maximo = do
+cargarJugadoresRestantes 0 lista _ _ salir maximo puntuaciones= do
+    forkIO (Sysadmin.mostrarPuntuaciones puntuaciones)
     esperarQueSeLibereElMaximoDeJugadores lista salir maximo
 
-cargarJugadoresRestantes cantidad lista id grilla salir maximo = do
+cargarJugadoresRestantes cantidad lista id grilla salir maximo puntuaciones= do
     iniciar <- Memoria.crear False
-    tid <- forkIO ( Jugador.iniciar grilla (show id) salir iniciar)
-    cargarJugadoresRestantes (cantidad-1) (lista ++ [iniciar]) (id +1) grilla salir maximo
+    puntos <- Memoria.crear 0
+    tid <- forkIO ( Jugador.iniciar grilla (show id) salir iniciar puntos)
+    cargarJugadoresRestantes (cantidad-1) (lista ++ [iniciar]) (id +1) grilla salir maximo (puntuaciones++[(id,puntos)])
 
 
-cargarJugadoresHabilitados 0 id grilla salir maximo totaldeJugadores  = do
-    cargarJugadoresRestantes (totaldeJugadores - maximo) [] maximo grilla salir maximo
+cargarJugadoresHabilitados 0 id grilla salir maximo totaldeJugadores puntuaciones = do
+    cargarJugadoresRestantes (totaldeJugadores - maximo) [] maximo grilla salir maximo puntuaciones
 
-cargarJugadoresHabilitados cantidad id grilla salir maximo totaldeJugadores = do
-
+cargarJugadoresHabilitados cantidad id grilla salir maximo totaldeJugadores puntuaciones= do
     iniciar <- Memoria.crear True
-
-    tid <- forkIO ( Jugador.iniciar grilla (show id) salir iniciar)
+    puntos <- Memoria.crear 0
+    tid <- forkIO ( Jugador.iniciar grilla (show id) salir iniciar puntos)
     Memoria.escribir (\x -> x + 1) salir
-
-    cargarJugadoresHabilitados (cantidad-1) (id+1) grilla salir maximo totaldeJugadores
+    cargarJugadoresHabilitados (cantidad-1) (id+1) grilla salir maximo totaldeJugadores (puntuaciones++[(id,puntos)])

@@ -60,7 +60,7 @@ jugar (x,y) grilla movimientos id salir = do
 	jugar posicionALaQueMeMuevo grilla movimientosRestantes id salir
 
 
-iniciar grilla id salir iniciar = do
+iniciar grilla id salir iniciar puntos = do
 
     putStrLn $ "Jugador "++id ++" esperando para iniciar..."
 
