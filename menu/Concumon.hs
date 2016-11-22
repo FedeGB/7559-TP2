@@ -21,32 +21,40 @@ data Concumon = Concumon { id :: String
 obtenerPosicionesSinConcumon grilla = [ a | a <- grilla, casillaValidaParaConcumon a]
 
 casillaValidaParaConcumon (_,_,booleano)
-    | (Memoria.leer booleano) == 0 = False
+    | (Memoria.leer2 booleano) == 0 = False
     | otherwise = True
 
 consultarValorActualCasilla (x,y) (xf,yf,z)
-    | x == xf && y == yf = (Memoria.leer z) /= 0
+    | x == xf && y == yf = (Memoria.leer2 z) /= 0
     | otherwise = False
 
 concumonFueAtrapado (x,y) grilla = [ a | a <- grilla , consultarValorActualCasilla (x,y) a]
 
+actualizarValoresCeldas (_,_,zo) (_,_,zf) = do
+    Memoria.escribir (\x -> 0) zo
+    Memoria.escribir (\x -> 1) zf
+
+obtenerCeldaDeLista grilla (x,y) = head [ val | val <- grilla , filtroPos (x,y) val ]
+
+filtroPos (x,y) (xf,yf,_)
+    | x == xf && y == yf = True
+    | otherwise = False
 
 moverse _ _ _ concumonesActivos True = do
     (Memoria.escribir (\x -> x - 1 ) concumonesActivos)
     return ()
 
-moverse (x,y) grilla tMovimiento concumonesActivos capturado = do
+moverse (x,y) grilla tMovimiento concumonesActivos False = do
     gen <- getStdGen
     gen2 <- newStdGen
     {-Obtengo la posicion a la que moverme-}
     let posicionesValidasConcumon = obtenerPosicionesSinConcumon grilla
     let posicionesPosibles = obtenePosicionesValidas (x,y) posicionesValidasConcumon
-    let maximoEspera = digitToInt('5')
     let maximo = (length (posicionesPosibles) - 1)
     let random = head (take 1 (randomRs (0,maximo) gen2))
-    let espera = head (take 1 (randomRs (0,maximoEspera) gen))
-    let posicionALaQueMeMuevo = obtenerSoloCoordenadas (posicionesPosibles !! random)
-
+    let celdaFinal = (posicionesPosibles !! random)
+    let posicionALaQueMeMuevo = obtenerSoloCoordenadas celdaFinal
+    actualizarValoresCeldas (obtenerCeldaDeLista grilla (x,y)) celdaFinal
     putStrLn $ "Concumon se movio de " ++ show (x,y) ++ " a " ++ show posicionALaQueMeMuevo
 
     threadDelay (100000*tMovimiento)
