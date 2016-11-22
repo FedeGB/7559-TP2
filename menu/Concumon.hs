@@ -21,8 +21,8 @@ data Concumon = Concumon { id :: String
 obtenerPosicionesSinConcumon grilla = [ a | a <- grilla, casillaValidaParaConcumon a]
 
 casillaValidaParaConcumon (_,_,booleano)
-    | (Memoria.leer2 booleano) == 0 = False
-    | otherwise = True
+    | (Memoria.leer2 booleano) == 0 = True
+    | otherwise = False
 
 consultarValorActualCasilla (x,y) (xf,yf,z)
     | x == xf && y == yf = (Memoria.leer2 z) /= 0
