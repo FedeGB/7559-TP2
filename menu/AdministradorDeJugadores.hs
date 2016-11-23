@@ -1,6 +1,6 @@
 module AdministradorDeJugadores
 (
-cargarJugadoresHabilitados
+cargarJugadores
 ) where
 
 import System.IO
@@ -13,38 +13,55 @@ import Grilla
 import Memoria
 import Sysadmin
 
+crearLista 0 lista valorInicial = do
+    return lista
+crearLista cantidad lista valorInicial = do
+    valor <- Memoria.crear valorInicial
+    crearLista (cantidad-1) (lista ++ [valor]) valorInicial
+
 chequearAgregarJugador maximo salir = do
     valor <- Memoria.leer salir
     check (valor < maximo) 
-
 
 esperarQueSeLibereElMaximoDeJugadores [] _ _ = do return ()
 
 esperarQueSeLibereElMaximoDeJugadores lista salir maximo = do
     atomically ( chequearAgregarJugador maximo salir )
-    let iniciar = head lista
+    let iniciar = (snd (head lista))
     Memoria.escribir (\a -> True) iniciar
     Memoria.escribir (\x -> x + 1) salir
     esperarQueSeLibereElMaximoDeJugadores (tail lista) salir maximo
 
+cargarJugadoresQueEsperan [] _ _ _= do
+    return ()
+cargarJugadoresQueEsperan listaDeJugadores listaDePuntuaciones salir grilla= do
+    let iniciar = (snd (head listaDeJugadores))
+    let puntos = (snd (head listaDePuntuaciones))
+    let idJugador = fst (head listaDePuntuaciones)
+    tid <- forkIO ( Jugador.iniciar grilla (show idJugador) salir iniciar puntos)
+    cargarJugadoresQueEsperan (tail listaDeJugadores) (tail listaDePuntuaciones) salir grilla
 
-cargarJugadoresRestantes 0 lista _ _ salir maximo puntuaciones= do
-    forkIO (Sysadmin.mostrarPuntuaciones puntuaciones)
-    esperarQueSeLibereElMaximoDeJugadores lista salir maximo
-
-cargarJugadoresRestantes cantidad lista id grilla salir maximo puntuaciones= do
-    iniciar <- Memoria.crear False
-    puntos <- Memoria.crear 0
-    tid <- forkIO ( Jugador.iniciar grilla (show id) salir iniciar puntos)
-    cargarJugadoresRestantes (cantidad-1) (lista ++ [iniciar]) (id +1) grilla salir maximo (puntuaciones++[(id,puntos)])
-
-
-cargarJugadoresHabilitados 0 id grilla salir maximo totaldeJugadores puntuaciones = do
-    cargarJugadoresRestantes (totaldeJugadores - maximo) [] maximo grilla salir maximo puntuaciones
-
-cargarJugadoresHabilitados cantidad id grilla salir maximo totaldeJugadores puntuaciones= do
+cargarJugadoresHabilitados2 0 _ _ _ = do
+    return ()
+cargarJugadoresHabilitados2 cantidad grilla salir listaDePuntuaciones = do
     iniciar <- Memoria.crear True
-    puntos <- Memoria.crear 0
-    tid <- forkIO ( Jugador.iniciar grilla (show id) salir iniciar puntos)
+    let puntos = (snd (head listaDePuntuaciones))
+    --Memoria.escribir (\x -> x +1) puntos
+    let idJugador = fst (head listaDePuntuaciones)
+    tid <- forkIO ( Jugador.iniciar grilla (show idJugador) salir iniciar puntos)
     Memoria.escribir (\x -> x + 1) salir
-    cargarJugadoresHabilitados (cantidad-1) (id+1) grilla salir maximo totaldeJugadores (puntuaciones++[(id,puntos)])
+    cargarJugadoresHabilitados2 (cantidad-1) grilla salir (tail listaDePuntuaciones)
+
+cargarJugadores cantidadDeJugadores maximoJugadores grilla salir = do
+    puntuaciones <- crearLista cantidadDeJugadores [] 0
+    let puntuacionesYJugadores = zip [0..(cantidadDeJugadores-1)] puntuaciones
+
+    esperar <- crearLista (cantidadDeJugadores-maximoJugadores) [] False
+    let jugadoresQueEsperan = zip [maximoJugadores..(cantidadDeJugadores-1)] esperar
+    let listaDePuntuacionesAux = drop maximoJugadores puntuacionesYJugadores
+
+    cargarJugadoresHabilitados2 maximoJugadores grilla salir puntuacionesYJugadores
+    cargarJugadoresQueEsperan jugadoresQueEsperan listaDePuntuacionesAux salir grilla
+    forkIO (Sysadmin.mostrarPuntuaciones puntuacionesYJugadores)
+    esperarQueSeLibereElMaximoDeJugadores jugadoresQueEsperan salir maximoJugadores
+    return ()

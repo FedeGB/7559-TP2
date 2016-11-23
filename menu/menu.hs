@@ -29,7 +29,7 @@ main = do
 
     let grilla = Grilla.generarGrilla ancho alto
 
-    AdministradorDeJugadores.cargarJugadoresHabilitados maximoJugadores 0 grilla salir maximoJugadores cantidadDeJugadores []
+    AdministradorDeJugadores.cargarJugadores cantidadDeJugadores maximoJugadores grilla salir
     atomically(chequearSalida salir)
 
     putStrLn "Fin del juego"

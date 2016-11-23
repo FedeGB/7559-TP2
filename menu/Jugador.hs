@@ -68,6 +68,8 @@ iniciar grilla id salir iniciar puntos = do
 
     putStrLn $ "Jugador "++id ++" inicio el juego"
 
+    Memoria.escribir (\x -> x + (read id ::Int)+1) puntos
+
     gen <- getStdGen
     gen2 <- newStdGen
 
