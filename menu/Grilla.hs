@@ -8,9 +8,4 @@ import Control.Concurrent.STM
 import Data.Char
 import Memoria
 
-
-generarXY 1 yi 1 = (1,1,Memoria.crear 0):[]
-generarXY x yi 1 = (x,1,Memoria.crear 0):(generarXY (x-1) yi yi)
-generarXY x yi y = (x,y,Memoria.crear 0):(generarXY x yi (y-1))
-
-generarGrilla x y = reverse ( generarXY x y y)
+generarGrilla ancho alto = [(x,y)| x<-[1..ancho], y<-[1..alto]]

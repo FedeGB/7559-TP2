@@ -11,6 +11,7 @@ import Memoria
 import AdministradorDeJugadores
 import NidoDeConcumones
 import Concumon
+import CrearLista
 
 chequearSalida salir = do
     valor <- Memoria.leer salir
@@ -27,7 +28,11 @@ main = do
     let maximoJugadores = Parser.obtenerMaximoJugadores contenido
     let cantidadDeJugadores = Parser.obtenerCantidadDeJugadores contenido
 
-    let grilla = Grilla.generarGrilla ancho alto
+    let posiciones = Grilla.generarGrilla ancho alto
+    casillaOcupada <- CrearLista.crearLista (ancho*alto) [] 0
+
+    let grillaAux = zip posiciones casillaOcupada
+    let grilla = [(x,y,z) | ((x,y),z)<-grillaAux]
 
     AdministradorDeJugadores.cargarJugadores cantidadDeJugadores maximoJugadores grilla salir
 --     nido <- forkIO (NidoDeConcumones.iniciarNido 5 2 grilla )
