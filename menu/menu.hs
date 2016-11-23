@@ -9,8 +9,8 @@ import Jugador
 import Grilla
 import Memoria
 import AdministradorDeJugadores
--- import NidoDeConcumones
--- import Concumon
+import NidoDeConcumones
+import Concumon
 
 chequearSalida salir = do
     valor <- Memoria.leer salir
@@ -30,6 +30,8 @@ main = do
     let grilla = Grilla.generarGrilla ancho alto
 
     AdministradorDeJugadores.cargarJugadores cantidadDeJugadores maximoJugadores grilla salir
+--     nido <- forkIO (NidoDeConcumones.iniciarNido 5 2 grilla )
+
     atomically(chequearSalida salir)
 
     putStrLn "Fin del juego"
