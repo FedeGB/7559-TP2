@@ -27,37 +27,58 @@ salirAntes movimientos valorRandom
     | valorRandom == 0 = 0
     | otherwise = movimientos - 1
 
+obtenerSiHayConcumon (x,y,z) = z
+
+cargarPuntacion hayConcumon puntos = do
+    atrapeConcumon <- Memoria.leer2 hayConcumon
+    if ( atrapeConcumon == 1)
+        then
+            Memoria.escribir (\x -> x +1) puntos
+        else
+            return ()
+    if ( atrapeConcumon == 1)
+        then
+            Memoria.escribir (\x -> 0) hayConcumon
+        else
+            return ()
+
 {-
 Posicion de origen
 grilla
 cantidad de movimientos a realizar --> se lo reemplaza por memoria compartida con un comando de salida
 id del jugador
 -}
-jugar _ _ 0 id salir = do
+jugar _ _ 0 id salir puntos = do
     putStrLn ("Jugador "++id++" termine de moverme")
     Memoria.escribir (\x -> x - 1) salir
 
-jugar (x,y) grilla movimientos id salir = do
-	{-Obtengo generadores aleatorios-}
-	gen <- getStdGen
-	gen2 <- newStdGen
-	{-Obtengo la posicion a la que moverme-}
-	let posicionesPosibles = obtenePosicionesValidas (x,y) grilla
-	let maximoEspera = digitToInt('5')
-	let maximo = (length (posicionesPosibles) - 1)
-	let random = head (take 1 (randomRs (0,maximo) gen2))
-	let espera = head (take 1 (randomRs (0,maximoEspera) gen))
-	let posicionALaQueMeMuevo = obtenerSoloCoordenadas (posicionesPosibles !! random)
+jugar (x,y) grilla movimientos id salir puntos = do
+    {-Obtengo generadores aleatorios-}
+    gen <- getStdGen
+    gen2 <- newStdGen
+    {-Obtengo la posicion a la que moverme-}
+    let posicionesPosibles = obtenePosicionesValidas (x,y) grilla
+    let maximoEspera = digitToInt('5')
+    let maximo = (length (posicionesPosibles) - 1)
+    let random = head (take 1 (randomRs (0,maximo) gen2))
+    let espera = head (take 1 (randomRs (0,maximoEspera) gen))
+    let posicionALaQueMeMuevo = obtenerSoloCoordenadas (posicionesPosibles !! random)
+    let hayConcumon = obtenerSiHayConcumon (posicionesPosibles !! random)
 
-	--Si el numero random es cero sale antes
-	--Hay que cambiar el random
-	let movimientosRestantes = salirAntes movimientos espera
-	
-	putStrLn $ "Jugador "++id ++" me movi de " ++ show (x,y) ++ " a " ++ show posicionALaQueMeMuevo
+    cargarPuntacion hayConcumon puntos
 
-	threadDelay (100000*espera)
+    --Si el numero random es cero sale antes
+    --Hay que cambiar el random
+    let movimientosRestantes = salirAntes movimientos espera
 
-	jugar posicionALaQueMeMuevo grilla movimientosRestantes id salir
+    putStrLn $ "Jugador "++id ++" me movi de " ++ show (x,y) ++ " a " ++ show posicionALaQueMeMuevo
+
+    --Verifico si hay un concumon
+
+
+    threadDelay (100000*espera)
+
+    jugar posicionALaQueMeMuevo grilla movimientosRestantes id salir puntos
 
 
 iniciar grilla id salir iniciar puntos = do
@@ -68,7 +89,7 @@ iniciar grilla id salir iniciar puntos = do
 
     putStrLn $ "Jugador "++id ++" inicio el juego"
 
-    Memoria.escribir (\x -> x + (read id ::Int)+1) puntos
+    --Memoria.escribir (\x -> x + (read id ::Int)+1) puntos
 
     gen <- getStdGen
     gen2 <- newStdGen
@@ -77,4 +98,4 @@ iniciar grilla id salir iniciar puntos = do
     let random = head (take 1 (randomRs (0,maximo) gen2))
     let posicionInicial = obtenerSoloCoordenadas (grilla !! random)
 
-    jugar posicionInicial grilla cantidadDeMovimientos id salir
+    jugar posicionInicial grilla cantidadDeMovimientos id salir puntos

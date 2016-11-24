@@ -50,8 +50,6 @@ filtroPos (x,y) (xf,yf,_)
     | x == xf && y == yf = True
     | otherwise = False
 
-
-
 moverse _ _ _ concumonesActivos True = do
     (Memoria.escribir (\x -> x - 1 ) concumonesActivos)
     return ()

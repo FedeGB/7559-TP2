@@ -40,7 +40,7 @@ main = do
     let grilla = [(x,y,z) | ((x,y),z)<-grillaAux]
 
     AdministradorDeJugadores.cargarJugadores cantidadDeJugadores maximoJugadores grilla salir
-    nido <- forkIO (NidoDeConcumones.iniciarNido 5 2 grilla )
+    nido <- forkIO (NidoDeConcumones.iniciarNido 9 2 grilla )
 
     atomically(chequearSalida salir)
 
