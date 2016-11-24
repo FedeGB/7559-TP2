@@ -3,7 +3,8 @@ module Memoria
 crear,
 leer,
 leer2,
-escribir
+escribir,
+escribirNoAtomicamente
 ) where
 import System.IO
 import Control.Concurrent
@@ -19,3 +20,7 @@ leer2 = atomically . readTVar
 escribir f valor = do
     atomically ( do dato <- readTVar valor
                     writeTVar valor (f dato) )
+
+escribirNoAtomicamente f valor = do
+    dato <- readTVar valor
+    writeTVar valor (f dato)

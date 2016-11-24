@@ -18,9 +18,7 @@ chequearSalida salir = do
     check (valor == 0) 
 
 main = do
-
     salir <- Memoria.crear 0
-
     contenido <- readFile "config"
 
     let ancho = Parser.obtenerAncho contenido
@@ -31,11 +29,18 @@ main = do
     let posiciones = Grilla.generarGrilla ancho alto
     casillaOcupada <- CrearLista.crearLista (ancho*alto) [] 0
 
+    {-let pri = head casillaOcupada 
+
+    Memoria.escribir (\x -> x + 1) pri
+
+    aa <- Memoria.leer2 pri
+    let c = aa + 1
+    putStrLn (show c)-}
     let grillaAux = zip posiciones casillaOcupada
     let grilla = [(x,y,z) | ((x,y),z)<-grillaAux]
 
     AdministradorDeJugadores.cargarJugadores cantidadDeJugadores maximoJugadores grilla salir
---     nido <- forkIO (NidoDeConcumones.iniciarNido 5 2 grilla )
+    nido <- forkIO (NidoDeConcumones.iniciarNido 5 2 grilla )
 
     atomically(chequearSalida salir)
 
