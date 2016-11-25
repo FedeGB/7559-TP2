@@ -69,7 +69,7 @@ jugar (x,y) grilla movimientos id salir puntos = do
 
     --Si el numero random es cero sale antes
     --Hay que cambiar el random
-    let movimientosRestantes = salirAntes movimientos espera
+    let movimientosRestantes = salirAntes movimientos 1
 
     putStrLn $ "Jugador "++id ++" me movi de " ++ show (x,y) ++ " a " ++ show posicionALaQueMeMuevo
 
