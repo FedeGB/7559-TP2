@@ -12,7 +12,7 @@ import Data.Char
 import Memoria
 import MovimientosUtils
 
-cantidadDeMovimientos = 20
+cantidadDeMovimientos = 10
 
 data Player = Player { id :: String
                      , turnos :: Int
@@ -29,18 +29,19 @@ salirAntes movimientos valorRandom
 
 obtenerSiHayConcumon (x,y,z) = z
 
+cargar concumon puntos = do
+    Memoria.escribirNoAtomicamente (\x -> 0) concumon
+    Memoria.escribirNoAtomicamente (\x -> x + 1) puntos
+
 cargarPuntacion hayConcumon puntos = do
-    atrapeConcumon <- Memoria.leer2 hayConcumon
-    if ( atrapeConcumon == 1)
+    atomically ( do
+        atrapeConcumon <- Memoria.leer hayConcumon
+        if ( atrapeConcumon == 1)
         then
-            Memoria.escribir (\x -> x +1) puntos
+            cargar hayConcumon puntos
         else
             return ()
-    if ( atrapeConcumon == 1)
-        then
-            Memoria.escribir (\x -> 0) hayConcumon
-        else
-            return ()
+        )
 
 {-
 Posicion de origen
@@ -69,14 +70,14 @@ jugar (x,y) grilla movimientos id salir puntos = do
 
     --Si el numero random es cero sale antes
     --Hay que cambiar el random
-    let movimientosRestantes = salirAntes movimientos 1
+    let movimientosRestantes = salirAntes movimientos espera
 
     putStrLn $ "Jugador "++id ++" me movi de " ++ show (x,y) ++ " a " ++ show posicionALaQueMeMuevo
 
-    --Verifico si hay un concumon
+    threadDelay (1000000*espera)
 
-
-    threadDelay (100000*espera)
+    --Reviso antes de irme si hay un concumon
+    cargarPuntacion hayConcumon puntos
 
     jugar posicionALaQueMeMuevo grilla movimientosRestantes id salir puntos
 
@@ -88,8 +89,6 @@ iniciar grilla id salir iniciar puntos = do
     atomically ( chequearInicioDelJuego iniciar )
 
     putStrLn $ "Jugador "++id ++" inicio el juego"
-
-    --Memoria.escribir (\x -> x + (read id ::Int)+1) puntos
 
     gen <- getStdGen
     gen2 <- newStdGen

@@ -29,18 +29,11 @@ main = do
     let posiciones = Grilla.generarGrilla ancho alto
     casillaOcupada <- CrearLista.crearLista (ancho*alto) [] 0
 
-    {-let pri = head casillaOcupada 
-
-    Memoria.escribir (\x -> x + 1) pri
-
-    aa <- Memoria.leer2 pri
-    let c = aa + 1
-    putStrLn (show c)-}
     let grillaAux = zip posiciones casillaOcupada
     let grilla = [(x,y,z) | ((x,y),z)<-grillaAux]
 
-    AdministradorDeJugadores.cargarJugadores cantidadDeJugadores maximoJugadores grilla salir
     nido <- forkIO (NidoDeConcumones.iniciarNido 9 2 grilla )
+    AdministradorDeJugadores.cargarJugadores cantidadDeJugadores maximoJugadores grilla salir
 
     atomically(chequearSalida salir)
 

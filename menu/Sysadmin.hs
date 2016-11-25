@@ -9,19 +9,18 @@ import System.Random
 import Data.Char
 import Memoria
 
-imprimirPuntuacion [] = do return()
-imprimirPuntuacion (x:xs) = do
+imprimirPuntuacion [] mensaje = do return mensaje
+imprimirPuntuacion (x:xs) mensaje = do
     let puntuacion = (snd x)
     valor <- Memoria.leer2 puntuacion
-    putStrLn $ "Jugador " ++ (show $ fst x) ++ " puntos: " ++ (show valor)
-    imprimirPuntuacion xs
+    let puntuacion = "Jugador " ++ (show $ fst x) ++ " puntos: " ++ (show valor)++"\n"
+    imprimirPuntuacion xs (mensaje ++ puntuacion)
 
 mostrarPuntuaciones lista = do 
     gen <- getStdGen
     let espera = head (take 1 (randomRs (1,5) gen))
     threadDelay (1000000*espera)
-    putStrLn "********************"
-    putStrLn "    PUNTUACIONES    "
-    imprimirPuntuacion lista
-    putStrLn "********************"
+    puntuaciones <- imprimirPuntuacion lista ""
+    let mensaje = "\n********************\n" ++ "    PUNTUACIONES    \n" ++ puntuaciones ++ "********************\n"
+    putStrLn mensaje
     mostrarPuntuaciones lista
