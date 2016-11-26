@@ -2,3 +2,5 @@ alto:4
 ancho:4
 maximoJugadores:5
 cantidadDeJugadores:10
+maximoDeConcumones:6
+tiempoDeMovimientoConcumones:2

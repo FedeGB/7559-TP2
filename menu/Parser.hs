@@ -3,7 +3,9 @@ module Parser
 obtenerAlto,
 obtenerAncho,
 obtenerMaximoJugadores,
-obtenerCantidadDeJugadores
+obtenerCantidadDeJugadores,
+obtenerMaximoDeConcumones,
+obtenerTiempoDeMovimientoConcumones
 ) where
 
 import Data.Char
@@ -18,6 +20,10 @@ ancho parametro = parametro == "ancho"
 maximoJugadores parametro = parametro == "maximoJugadores"
 
 cantidadDeJugadores parametro = parametro == "cantidadDeJugadores"
+
+maximoDeConcumones parametro = parametro == "maximoDeConcumones"
+
+tiempoDeMovimientoConcumones parametro = parametro == "tiempoDeMovimientoConcumones"
 
 obtenerParametro validador parametros = ( read ( head [ y | (x,y)<-parametros , validador x ] ) :: Int )
 
@@ -36,3 +42,7 @@ obtenerAncho listaParametros = parser ancho listaParametros
 obtenerMaximoJugadores listaParametros = parser maximoJugadores listaParametros
 
 obtenerCantidadDeJugadores listaParametros = parser cantidadDeJugadores listaParametros
+
+obtenerMaximoDeConcumones listaParametros = parser maximoDeConcumones listaParametros
+
+obtenerTiempoDeMovimientoConcumones listaParametros = parser tiempoDeMovimientoConcumones listaParametros

@@ -25,6 +25,8 @@ main = do
     let alto = Parser.obtenerAlto contenido
     let maximoJugadores = Parser.obtenerMaximoJugadores contenido
     let cantidadDeJugadores = Parser.obtenerCantidadDeJugadores contenido
+    let maximoDeConcumones = Parser.obtenerMaximoDeConcumones contenido
+    let tiempoDeMovimiento = Parser.obtenerTiempoDeMovimientoConcumones contenido
 
     let posiciones = Grilla.generarGrilla ancho alto
     casillaOcupada <- CrearLista.crearLista (ancho*alto) [] 0
@@ -32,7 +34,7 @@ main = do
     let grillaAux = zip posiciones casillaOcupada
     let grilla = [(x,y,z) | ((x,y),z)<-grillaAux]
 
-    nido <- forkIO (NidoDeConcumones.iniciarNido 9 2 grilla )
+    nido <- forkIO (NidoDeConcumones.iniciarNido maximoDeConcumones tiempoDeMovimiento grilla )
     AdministradorDeJugadores.cargarJugadores cantidadDeJugadores maximoJugadores grilla salir
 
     atomically(chequearSalida salir)
