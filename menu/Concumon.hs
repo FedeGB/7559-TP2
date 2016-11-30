@@ -30,8 +30,8 @@ obtener grilla posiciones = do
         else obtener (tail grilla) posiciones
 
 actualizarValoresCeldas (_,_,zo) (_,_,zf) = do
-    Memoria.escribir (\x -> 0) zo
-    Memoria.escribir (\x -> 1) zf
+    Memoria.escribirNoAtomicamente (\x -> 0) zo
+    Memoria.escribirNoAtomicamente (\x -> 1) zf
 
 obtenerCeldaDeLista grilla (x,y) = head [ val | val <- grilla , filtroPos (x,y) val ]
 
@@ -67,7 +67,7 @@ moverse posicion grilla tMovimiento concumonesActivos False semaforo logger = do
             Semaforo.v semaforo
             moverse posicion grilla tMovimiento concumonesActivos True semaforo logger
         else do
-            actualizarValoresCeldas posicion posicionALaQueMeMuevo
+            atomically ( actualizarValoresCeldas posicion posicionALaQueMeMuevo )
             Semaforo.v semaforo
             let (xo,yo) = obtenerSoloCoordenadas posicion
             let (xf,yf) = obtenerSoloCoordenadas posicionALaQueMeMuevo

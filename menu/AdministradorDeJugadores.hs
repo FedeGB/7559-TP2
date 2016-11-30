@@ -59,4 +59,4 @@ cargarJugadores cantidadDeJugadores maximoJugadores grilla salir logger = do
     cargarJugadoresQueEsperan jugadoresQueEsperan listaDePuntuacionesAux salir grilla logger
     forkIO (Sysadmin.mostrarPuntuaciones puntuacionesYJugadores logger)
     esperarQueSeLibereElMaximoDeJugadores jugadoresQueEsperan salir maximoJugadores
-    return ()
+    return puntuacionesYJugadores

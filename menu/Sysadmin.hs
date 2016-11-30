@@ -1,6 +1,7 @@
 module Sysadmin
 (
-mostrarPuntuaciones
+mostrarPuntuaciones,
+mostrarPuntuacionesFinales
 ) where
 
 import System.IO
@@ -16,6 +17,11 @@ imprimirPuntuacion (x:xs) mensaje = do
     valor <- Memoria.leer2 puntuacion
     let puntuacion = "Jugador " ++ (show $ fst x) ++ " puntos: " ++ (show valor)++"\n"
     imprimirPuntuacion xs (mensaje ++ puntuacion)
+
+mostrarPuntuacionesFinales lista logger = do 
+    puntuaciones <- imprimirPuntuacion lista ""
+    let mensaje = "\n********************\n" ++ "PUNTUACIONES FINALES\n" ++ puntuaciones ++ "********************"
+    Log.escribir logger mensaje
 
 mostrarPuntuaciones lista logger = do 
     gen <- getStdGen

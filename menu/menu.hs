@@ -13,6 +13,7 @@ import NidoDeConcumones
 import Concumon
 import CrearLista
 import Semaforo
+import Sysadmin
 import Log
 
 chequearSalida salir = do
@@ -41,9 +42,11 @@ main = do
     let grilla = [(x,y,z) | ((x,y),z)<-grillaAux]
 
     nido <- forkIO (NidoDeConcumones.iniciarNido maximoDeConcumones tiempoDeMovimiento grilla logger)
-    AdministradorDeJugadores.cargarJugadores cantidadDeJugadores maximoJugadores grilla salir logger
+    puntuacionesYJugadores <- AdministradorDeJugadores.cargarJugadores cantidadDeJugadores maximoJugadores grilla salir logger
 
     atomically(chequearSalida salir)
+
+    Sysadmin.mostrarPuntuacionesFinales puntuacionesYJugadores logger
 
     Log.escribir logger "SALIR"
 
