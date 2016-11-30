@@ -44,14 +44,7 @@ cargarPuntacion hayConcumon puntos = do
             return ()
         )
 
-{-
-Posicion de origen
-grilla
-cantidad de movimientos a realizar --> se lo reemplaza por memoria compartida con un comando de salida
-id del jugador
--}
 jugar _ _ 0 id salir puntos logger = do
-    --putStrLn ("Jugador "++id++" termine de moverme")
     Log.escribir logger ( "Jugador "++id++" termine de moverme" )
     Memoria.escribir (\x -> x - 1) salir
 
@@ -71,10 +64,8 @@ jugar (x,y) grilla movimientos id salir puntos logger = do
     cargarPuntacion hayConcumon puntos
 
     --Si el numero random es cero sale antes
-    --Hay que cambiar el random
     let movimientosRestantes = salirAntes movimientos espera
 
-    --putStrLn $ "Jugador "++id ++" me movi de " ++ show (x,y) ++ " a " ++ show posicionALaQueMeMuevo
     Log.escribir logger ( "Jugador "++id ++" me movi de " ++ show (x,y) ++ " a " ++ show posicionALaQueMeMuevo )
 
     threadDelay (1000000*espera)
@@ -87,12 +78,10 @@ jugar (x,y) grilla movimientos id salir puntos logger = do
 
 iniciar grilla id salir iniciar puntos logger = do
 
-    --putStrLn $ "Jugador "++id ++" esperando para iniciar..."
     Log.escribir logger ("Jugador "++id ++" esperando para iniciar...")
 
     atomically ( chequearInicioDelJuego iniciar )
 
-    --putStrLn $ "Jugador "++id ++" inicio el juego"
     Log.escribir logger ("Jugador "++id ++" inicio el juego")
 
     gen <- getStdGen

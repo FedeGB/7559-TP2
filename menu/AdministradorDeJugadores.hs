@@ -41,7 +41,7 @@ cargarJugadoresHabilitados 0 _ _ _ _ = do
 cargarJugadoresHabilitados cantidad grilla salir listaDePuntuaciones logger = do
     iniciar <- Memoria.crear True
     let puntos = (snd (head listaDePuntuaciones))
-    --Memoria.escribir (\x -> x +1) puntos
+    
     let idJugador = fst (head listaDePuntuaciones)
     tid <- forkIO ( Jugador.iniciar grilla (show idJugador) salir iniciar puntos logger)
     Memoria.escribir (\x -> x + 1) salir

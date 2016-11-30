@@ -23,6 +23,5 @@ mostrarPuntuaciones lista logger = do
     threadDelay (1000000*espera)
     puntuaciones <- imprimirPuntuacion lista ""
     let mensaje = "\n********************\n" ++ "    PUNTUACIONES    \n" ++ puntuaciones ++ "********************"
-    --putStrLn mensaje
     Log.escribir logger mensaje
     mostrarPuntuaciones lista logger

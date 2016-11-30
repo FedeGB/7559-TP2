@@ -54,7 +54,6 @@ obtenerPosicion posicion grilla = do
             return celdaFinal
 
 moverse posicion grilla tMovimiento concumonesActivos True semaforo logger = do
-    --putStrLn $ "Concumon fue atrapado en " ++ show (obtenerSoloCoordenadas posicion)
     Log.escribir logger ( "Concumon fue atrapado en " ++ show (obtenerSoloCoordenadas posicion) )
     Memoria.escribir (\x -> x - 1 ) concumonesActivos
     return ()
@@ -72,7 +71,6 @@ moverse posicion grilla tMovimiento concumonesActivos False semaforo logger = do
             Semaforo.v semaforo
             let (xo,yo) = obtenerSoloCoordenadas posicion
             let (xf,yf) = obtenerSoloCoordenadas posicionALaQueMeMuevo
-            --putStrLn $ "Concumon se movio de " ++ show (xo,yo) ++ " a " ++ show (xf,yf)
             Log.escribir logger ( "Concumon se movio de " ++ show (xo,yo) ++ " a " ++ show (xf,yf) )
             threadDelay (1000000*tMovimiento)
             moverse posicionALaQueMeMuevo grilla tMovimiento concumonesActivos False semaforo logger
@@ -95,8 +93,6 @@ iniciar grilla tMovimiento concumonesActivos semaforo logger = do
         )
 
     Semaforo.v semaforo
-
-    --putStrLn $ "Concumon nacio del nido en " ++ (show (x,y))
 
     Log.escribir logger ( "Concumon nacio del nido en " ++ (show (x,y)) )
     moverse posicionInicial grilla tMovimiento concumonesActivos False semaforo logger
