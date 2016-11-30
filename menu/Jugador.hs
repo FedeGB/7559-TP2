@@ -11,6 +11,7 @@ import Control.Concurrent.STM
 import Data.Char
 import Memoria
 import MovimientosUtils
+import Log
 
 cantidadDeMovimientos = 10
 
@@ -49,11 +50,12 @@ grilla
 cantidad de movimientos a realizar --> se lo reemplaza por memoria compartida con un comando de salida
 id del jugador
 -}
-jugar _ _ 0 id salir puntos = do
-    putStrLn ("Jugador "++id++" termine de moverme")
+jugar _ _ 0 id salir puntos logger = do
+    --putStrLn ("Jugador "++id++" termine de moverme")
+    Log.escribir logger ( "Jugador "++id++" termine de moverme" )
     Memoria.escribir (\x -> x - 1) salir
 
-jugar (x,y) grilla movimientos id salir puntos = do
+jugar (x,y) grilla movimientos id salir puntos logger = do
     {-Obtengo generadores aleatorios-}
     gen <- getStdGen
     gen2 <- newStdGen
@@ -72,23 +74,26 @@ jugar (x,y) grilla movimientos id salir puntos = do
     --Hay que cambiar el random
     let movimientosRestantes = salirAntes movimientos espera
 
-    putStrLn $ "Jugador "++id ++" me movi de " ++ show (x,y) ++ " a " ++ show posicionALaQueMeMuevo
+    --putStrLn $ "Jugador "++id ++" me movi de " ++ show (x,y) ++ " a " ++ show posicionALaQueMeMuevo
+    Log.escribir logger ( "Jugador "++id ++" me movi de " ++ show (x,y) ++ " a " ++ show posicionALaQueMeMuevo )
 
     threadDelay (1000000*espera)
 
     --Reviso antes de irme si hay un concumon
     cargarPuntacion hayConcumon puntos
 
-    jugar posicionALaQueMeMuevo grilla movimientosRestantes id salir puntos
+    jugar posicionALaQueMeMuevo grilla movimientosRestantes id salir puntos logger
 
 
-iniciar grilla id salir iniciar puntos = do
+iniciar grilla id salir iniciar puntos logger = do
 
-    putStrLn $ "Jugador "++id ++" esperando para iniciar..."
+    --putStrLn $ "Jugador "++id ++" esperando para iniciar..."
+    Log.escribir logger ("Jugador "++id ++" esperando para iniciar...")
 
     atomically ( chequearInicioDelJuego iniciar )
 
-    putStrLn $ "Jugador "++id ++" inicio el juego"
+    --putStrLn $ "Jugador "++id ++" inicio el juego"
+    Log.escribir logger ("Jugador "++id ++" inicio el juego")
 
     gen <- getStdGen
     gen2 <- newStdGen
@@ -97,4 +102,4 @@ iniciar grilla id salir iniciar puntos = do
     let random = head (take 1 (randomRs (0,maximo) gen2))
     let posicionInicial = obtenerSoloCoordenadas (grilla !! random)
 
-    jugar posicionInicial grilla cantidadDeMovimientos id salir puntos
+    jugar posicionInicial grilla cantidadDeMovimientos id salir puntos logger

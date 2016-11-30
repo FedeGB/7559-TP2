@@ -12,12 +12,18 @@ import AdministradorDeJugadores
 import NidoDeConcumones
 import Concumon
 import CrearLista
+import Semaforo
+import Log
 
 chequearSalida salir = do
     valor <- Memoria.leer salir
     check (valor == 0) 
 
 main = do
+    archivoLog <- openFile "Logger.txt" WriteMode
+    logger <- Log.crearLog
+    semaforoCerraLog <- Semaforo.crearSemaforo 0
+    forkIO ( Log.leer logger archivoLog semaforoCerraLog)
     salir <- Memoria.crear 0
     contenido <- readFile "config"
 
@@ -34,9 +40,13 @@ main = do
     let grillaAux = zip posiciones casillaOcupada
     let grilla = [(x,y,z) | ((x,y),z)<-grillaAux]
 
-    nido <- forkIO (NidoDeConcumones.iniciarNido maximoDeConcumones tiempoDeMovimiento grilla )
-    AdministradorDeJugadores.cargarJugadores cantidadDeJugadores maximoJugadores grilla salir
+    nido <- forkIO (NidoDeConcumones.iniciarNido maximoDeConcumones tiempoDeMovimiento grilla logger)
+    AdministradorDeJugadores.cargarJugadores cantidadDeJugadores maximoJugadores grilla salir logger
 
     atomically(chequearSalida salir)
+
+    Log.escribir logger "SALIR"
+
+    Semaforo.p semaforoCerraLog
 
     putStrLn "Fin del juego"

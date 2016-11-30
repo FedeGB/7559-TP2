@@ -27,27 +27,27 @@ esperarQueSeLibereElMaximoDeJugadores lista salir maximo = do
     Memoria.escribir (\x -> x + 1) salir
     esperarQueSeLibereElMaximoDeJugadores (tail lista) salir maximo
 
-cargarJugadoresQueEsperan [] _ _ _= do
+cargarJugadoresQueEsperan [] _ _ _ _= do
     return ()
-cargarJugadoresQueEsperan listaDeJugadores listaDePuntuaciones salir grilla= do
+cargarJugadoresQueEsperan listaDeJugadores listaDePuntuaciones salir grilla logger = do
     let iniciar = (snd (head listaDeJugadores))
     let puntos = (snd (head listaDePuntuaciones))
     let idJugador = fst (head listaDePuntuaciones)
-    tid <- forkIO ( Jugador.iniciar grilla (show idJugador) salir iniciar puntos)
-    cargarJugadoresQueEsperan (tail listaDeJugadores) (tail listaDePuntuaciones) salir grilla
+    tid <- forkIO ( Jugador.iniciar grilla (show idJugador) salir iniciar puntos logger)
+    cargarJugadoresQueEsperan (tail listaDeJugadores) (tail listaDePuntuaciones) salir grilla logger
 
-cargarJugadoresHabilitados 0 _ _ _ = do
+cargarJugadoresHabilitados 0 _ _ _ _ = do
     return ()
-cargarJugadoresHabilitados cantidad grilla salir listaDePuntuaciones = do
+cargarJugadoresHabilitados cantidad grilla salir listaDePuntuaciones logger = do
     iniciar <- Memoria.crear True
     let puntos = (snd (head listaDePuntuaciones))
     --Memoria.escribir (\x -> x +1) puntos
     let idJugador = fst (head listaDePuntuaciones)
-    tid <- forkIO ( Jugador.iniciar grilla (show idJugador) salir iniciar puntos)
+    tid <- forkIO ( Jugador.iniciar grilla (show idJugador) salir iniciar puntos logger)
     Memoria.escribir (\x -> x + 1) salir
-    cargarJugadoresHabilitados (cantidad-1) grilla salir (tail listaDePuntuaciones)
+    cargarJugadoresHabilitados (cantidad-1) grilla salir (tail listaDePuntuaciones) logger
 
-cargarJugadores cantidadDeJugadores maximoJugadores grilla salir = do
+cargarJugadores cantidadDeJugadores maximoJugadores grilla salir logger = do
     puntuaciones <- CrearLista.crearLista cantidadDeJugadores [] 0
     let puntuacionesYJugadores = zip [0..(cantidadDeJugadores-1)] puntuaciones
 
@@ -55,8 +55,8 @@ cargarJugadores cantidadDeJugadores maximoJugadores grilla salir = do
     let jugadoresQueEsperan = zip [maximoJugadores..(cantidadDeJugadores-1)] esperar
     let listaDePuntuacionesAux = drop maximoJugadores puntuacionesYJugadores
 
-    cargarJugadoresHabilitados maximoJugadores grilla salir puntuacionesYJugadores
-    cargarJugadoresQueEsperan jugadoresQueEsperan listaDePuntuacionesAux salir grilla
-    forkIO (Sysadmin.mostrarPuntuaciones puntuacionesYJugadores)
+    cargarJugadoresHabilitados maximoJugadores grilla salir puntuacionesYJugadores logger
+    cargarJugadoresQueEsperan jugadoresQueEsperan listaDePuntuacionesAux salir grilla logger
+    forkIO (Sysadmin.mostrarPuntuaciones puntuacionesYJugadores logger)
     esperarQueSeLibereElMaximoDeJugadores jugadoresQueEsperan salir maximoJugadores
     return ()
