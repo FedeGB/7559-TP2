@@ -32,7 +32,7 @@ leer chan archivo semaforoCerraLog = do
                 return ()
             else do
                 fecha <- fechaYHora
-               	let mensajeAImprimir = ( "[" ++ (show fecha) ++ "]\t" ++ mensaje )
+                let mensajeAImprimir = ( "[" ++ (show fecha) ++ "]\t" ++ mensaje )
                 putStrLn mensajeAImprimir
                 hPutStrLn archivo mensajeAImprimir
                 leer chan archivo semaforoCerraLog
